@@ -41,6 +41,8 @@ class QOS(enum.Enum):
     """
     The Quality of Service required by the broker that will handle messages of some topic from a producer to a consumer
     """
+    AT_LEAST_ONCE = "AT_LEAST_ONCE"
+    AT_MOST_ONCE = "AT_MOST_ONCE"
     EXACTLY_ONCE = "EXACTLY_ONCE"
 
     @classmethod
