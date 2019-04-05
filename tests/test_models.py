@@ -27,5 +27,105 @@ http://opensource.org/licenses/BSD-3-Clause
 
 Details on EUROCONTROL: http://www.eurocontrol.int
 """
+import pytest
+
+from subscription_manager_client.models import Topic, Subscription, QOS
 
 __author__ = "EUROCONTROL (SWIM)"
+
+
+@pytest.mark.parametrize('topic_dict, expected_topic', [
+    (
+        {
+            'name': 'topic',
+            'id': 1
+        },
+        Topic(name='topic', id=1)
+    )
+])
+def test_topic__from_json(topic_dict, expected_topic):
+    topic = Topic.from_json(topic_dict)
+
+    assert expected_topic == topic
+
+
+@pytest.mark.parametrize('topic, expected_dict', [
+    (
+        Topic(name='topic', id=1),
+        {
+            'name': 'topic',
+            'id': 1
+        }
+    )
+])
+def test_topic__to_json(topic, expected_dict):
+    topic_dict = topic.to_json()
+
+    assert expected_dict == topic_dict
+
+
+@pytest.mark.parametrize('subscription_dict, expected_subscription', [
+    (
+        {
+            'queue': 'queue name',
+            'topic': {
+                'name': 'topic',
+                'id': 1
+            },
+            'active': True,
+            'qos': 'EXACTLY_ONCE',
+            'durable': True,
+            'id': 1
+        },
+        Subscription(
+            queue='queue name',
+            topic=Topic(name='topic', id=1),
+            active=True,
+            qos=QOS.EXACTLY_ONCE.value,
+            durable=True,
+            id=1
+        )
+    )
+])
+def test_subscription__from_json(subscription_dict, expected_subscription):
+    subscription = Subscription.from_json(subscription_dict)
+
+    assert expected_subscription == subscription
+
+
+@pytest.mark.parametrize('subscription, expected_dict', [
+    (
+        Subscription(
+            queue='queue name',
+            topic=Topic(name='topic', id=1),
+            active=True,
+            qos=QOS.EXACTLY_ONCE.value,
+            durable=True,
+            id=1
+        ),
+        {
+            'queue': 'queue name',
+            'topic': {
+                'name': 'topic',
+                'id': 1
+            },
+            'active': True,
+            'qos': 'EXACTLY_ONCE',
+            'durable': True,
+            'id': 1
+        }
+    )
+])
+def test_subscription__to_json(subscription, expected_dict):
+    subscription_dict = subscription.to_json()
+
+    assert expected_dict == subscription_dict
+
+
+@pytest.mark.parametrize('qos', ['invalid', 1, '', True])
+def test_subscription__invalid_qos__raises_valueerror(qos):
+    subscription = Subscription(queue='queue')
+
+    with pytest.raises(ValueError) as e:
+        subscription.qos = qos
+    assert f'qos should be one of {QOS.all()}' == str(e.value)

@@ -27,5 +27,120 @@ http://opensource.org/licenses/BSD-3-Clause
 
 Details on EUROCONTROL: http://www.eurocontrol.int
 """
+from __future__ import annotations
+import enum
+import typing as t
+
+from rest_client import BaseModel
+from rest_client.typing import JSONType
 
 __author__ = "EUROCONTROL (SWIM)"
+
+
+class QOS(enum.Enum):
+    """
+    The Quality of Service required by the broker that will handle messages of some topic from a producer to a consumer
+    """
+    EXACTLY_ONCE = "EXACTLY_ONCE"
+
+    @classmethod
+    def all(cls):
+        return [e.value for e in cls]
+
+
+class Topic(BaseModel):
+
+    def __init__(self, name: str, id: int = None) -> None:
+        """
+        :param name: the name of the topic
+        :param id: the DB id of the topic
+        """
+        self.name = name
+        self.id = id
+
+    @classmethod
+    def from_json(cls, object_dict: JSONType) -> Topic:
+        return cls(
+            name=object_dict['name'],
+            id=object_dict.get('id')
+        )
+
+    def to_json(self) -> JSONType:
+        result = {
+            'name': self.name
+        }
+        _update_if_not_none(result, 'id', self.id)
+
+        return result
+
+
+class Subscription(BaseModel):
+
+    def __init__(self,
+                 queue: str,
+                 topic_id: t.Optional[int] = None,
+                 active: t.Optional[bool] = None,
+                 qos: t.Optional[QOS] = None,
+                 durable: t.Optional[bool] = None,
+                 topic: t.Optional[Topic] = None,
+                 id: object = t.Optional[int]) -> None:
+        """
+        :param queue: the unique name of the created queue upon a subscription request
+        :param topic_id: the DB id of the desired topic
+        :param active: indicates whether the subscription is active or not
+        :param qos: the Quality of Service handled by the broker for the specific subscription
+        :param durable: expresses the durability of the subscription (if the messages will be kept while subscribers
+                        are offline
+        :param topic: the full topic structure associated with this subscription
+        :param id: the DB id of the subsription
+        """
+
+        self.queue = queue
+        self.topic_id = topic_id
+        self.active = active
+        self.durable = durable
+        self.topic = topic
+        self.id = id
+
+        self._qos = None
+        self.qos = qos
+
+    @property
+    def qos(self):
+        return self._qos
+
+    @qos.setter
+    def qos(self, value):
+        if value is not None and value not in QOS.all():
+            raise ValueError(f'qos should be one of {QOS.all()}')
+
+        self._qos = value
+
+    @classmethod
+    def from_json(cls, object_dict: JSONType) -> Subscription:
+        return cls(
+            queue=object_dict['queue'],
+            active=object_dict['active'],
+            qos=object_dict['qos'],
+            durable=object_dict['durable'],
+            topic=Topic.from_json(object_dict['topic']),
+            id=object_dict['id'],
+        )
+
+    def to_json(self):
+        result = {
+            'queue': self.queue,
+        }
+
+        _update_if_not_none(result, 'topic_id', self.topic_id)
+        _update_if_not_none(result, 'active', self.active)
+        _update_if_not_none(result, 'qos', self.qos)
+        _update_if_not_none(result, 'durable', self.durable)
+        _update_if_not_none(result, 'topic', self.topic.to_json())
+        _update_if_not_none(result, 'id', self.id)
+
+        return result
+
+def _update_if_not_none(d, prop, value):
+    if value is not None:
+        d[prop] = value
