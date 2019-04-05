@@ -1,0 +1,7 @@
+name: opensky-network-manager
+dependencies:
+  - python
+  - pytest
+  - pytest-cov
+  - pip:
+      - git+ssh://git@bitbucket.org/antavelos-eurocontrol/rest-client.git
