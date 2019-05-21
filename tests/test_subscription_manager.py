@@ -182,6 +182,37 @@ def test_post_topic__topic_object_is_returned():
 
 
 @pytest.mark.parametrize('error_code', [400, 401, 403, 404, 500])
+def test_delete_topic_by_id__http_error_code__raises_api_error(error_code):
+    response = Mock()
+    response.status_code = error_code
+
+    request_handler = Mock()
+    request_handler.delete = Mock(return_value=response)
+
+    client = SubscriptionManagerClient(request_handler=request_handler)
+
+    with pytest.raises(APIError):
+        client.delete_topic_by_id(1)
+
+
+def test_delete_topic_by_id():
+    response = Mock()
+    response.status_code = 204
+    response.content = {}
+    response.json = Mock(return_value={})
+
+    request_handler = Mock()
+    request_handler.delete = Mock(return_value=response)
+
+    client = SubscriptionManagerClient(request_handler=request_handler)
+
+    topic = client.delete_topic_by_id(1)
+
+    called_url = request_handler.delete.call_args[0][0]
+    assert BASE_URL + 'topics/1' == called_url
+
+
+@pytest.mark.parametrize('error_code', [400, 401, 403, 404, 500])
 def test_get_subscriptions__http_error_code__raises_api_error(error_code):
     response = Mock()
     response.status_code = error_code
@@ -318,4 +349,35 @@ def test_put_subscription__subscription_object_is_returned():
     assert expected_subscription == subscription
 
     called_url = request_handler.put.call_args[0][0]
+    assert BASE_URL + 'subscriptions/1' == called_url
+
+
+@pytest.mark.parametrize('error_code', [400, 401, 403, 404, 500])
+def test_delete_subscription_by_id__http_error_code__raises_api_error(error_code):
+    response = Mock()
+    response.status_code = error_code
+
+    request_handler = Mock()
+    request_handler.delete = Mock(return_value=response)
+
+    client = SubscriptionManagerClient(request_handler=request_handler)
+
+    with pytest.raises(APIError):
+        client.delete_subscription_by_id(1)
+
+
+def test_delete_subscription_by_id():
+    response = Mock()
+    response.status_code = 204
+    response.content = {}
+    response.json = Mock(return_value={})
+
+    request_handler = Mock()
+    request_handler.delete = Mock(return_value=response)
+
+    client = SubscriptionManagerClient(request_handler=request_handler)
+
+    subscription = client.delete_subscription_by_id(1)
+
+    called_url = request_handler.delete.call_args[0][0]
     assert BASE_URL + 'subscriptions/1' == called_url
