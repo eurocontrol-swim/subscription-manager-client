@@ -66,12 +66,12 @@ class SubscriptionManagerClient(Requestor, ClientFactory):
 
         return self.perform_request('POST', self._url_topics, json=topic_data, response_class=Topic)
 
-    def put_topic(self, topic_id: int, topic: Topic) -> Topic:
-        url = self._url_topic_by_id.format(topic_id=topic_id)
-
-        topic_data = topic.to_json()
-
-        return self.perform_request('PUT', url, json=topic_data, response_class=Topic)
+    # def put_topic(self, topic_id: int, topic: Topic) -> Topic:
+    #     url = self._url_topic_by_id.format(topic_id=topic_id)
+    #
+    #     topic_data = topic.to_json()
+    #
+    #     return self.perform_request('PUT', url, json=topic_data, response_class=Topic)
 
     def get_subscriptions(self) -> t.List[Subscription]:
         return self.perform_request('GET', self._url_subscriptions, response_class=Subscription, many=True)
