@@ -77,6 +77,41 @@ def test_get_topics__list_of_topics_is_returned():
 
 
 @pytest.mark.parametrize('error_code', [400, 401, 403, 404, 500])
+def test_get_topics_own__http_error_code__raises_api_error(error_code):
+    response = Mock()
+    response.status_code = error_code
+
+    request_handler = Mock()
+    request_handler.get = Mock(return_value=response)
+
+    client = SubscriptionManagerClient(request_handler=request_handler)
+
+    with pytest.raises(APIError):
+        client.get_topics_own()
+
+
+def test_get_topics_own__list_of_topics_is_returned():
+    topic_dict_list, expected_topic_list = make_topic_list()
+
+    response = Mock()
+    response.status_code = 200
+    response.content = topic_dict_list
+    response.json = Mock(return_value=topic_dict_list)
+
+    request_handler = Mock()
+    request_handler.get = Mock(return_value=response)
+
+    client = SubscriptionManagerClient(request_handler=request_handler)
+
+    topic_list = client.get_topics_own()
+
+    assert expected_topic_list == topic_list
+
+    called_url = request_handler.get.call_args[0][0]
+    assert BASE_URL + 'topics/own' == called_url
+
+
+@pytest.mark.parametrize('error_code', [400, 401, 403, 404, 500])
 def test_get_topic_by_id__http_error_code__raises_api_error(error_code):
     response = Mock()
     response.status_code = error_code

@@ -49,12 +49,16 @@ class SubscriptionManagerClient(Requestor, ClientFactory):
         self._request_handler = request_handler
 
         self._url_topics = self._BASE_URL + 'topics/'
+        self._url_topics_own = self._BASE_URL + 'topics/own'
         self._url_topic_by_id = self._BASE_URL + 'topics/{topic_id}'
         self._url_subscriptions = self._BASE_URL + 'subscriptions/'
         self._url_subscription_by_id = self._BASE_URL + 'subscriptions/{subscription_id}'
 
     def get_topics(self) -> t.List[Topic]:
         return self.perform_request('GET', self._url_topics, response_class=Topic, many=True)
+
+    def get_topics_own(self) -> t.List[Topic]:
+        return self.perform_request('GET', self._url_topics_own, response_class=Topic, many=True)
 
     def get_topic_by_id(self, topic_id: int) -> Topic:
         url = self._url_topic_by_id.format(topic_id=topic_id)
