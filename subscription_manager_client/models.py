@@ -30,6 +30,7 @@ Details on EUROCONTROL: http://www.eurocontrol.int
 from __future__ import annotations
 import enum
 import typing as t
+from functools import reduce
 
 from rest_client import BaseModel
 from rest_client.typing import JSONType
@@ -79,7 +80,7 @@ class Topic(BaseModel):
 class Subscription(BaseModel):
 
     def __init__(self,
-                 queue: str,
+                 queue: t.Optional[str] = None,
                  topic_id: t.Optional[int] = None,
                  active: t.Optional[bool] = None,
                  qos: t.Optional[QOS] = None,
@@ -130,16 +131,15 @@ class Subscription(BaseModel):
         )
 
     def to_json(self):
-        result = {
-            'queue': self.queue,
-        }
+        props = ['queue', 'topic_id', 'active', 'qos', 'durable', 'topic', 'id']
 
-        _update_if_not_none(result, 'topic_id', self.topic_id)
-        _update_if_not_none(result, 'active', self.active)
-        _update_if_not_none(result, 'qos', self.qos)
-        _update_if_not_none(result, 'durable', self.durable)
-        _update_if_not_none(result, 'topic', self.topic.to_json())
-        _update_if_not_none(result, 'id', self.id)
+        result = {}
+
+        for prop in props:
+            attr = getattr(self, prop)
+            if hasattr(attr, 'to_json'):
+                attr = attr.to_json()
+            _update_if_not_none(result, prop, attr)
 
         return result
 

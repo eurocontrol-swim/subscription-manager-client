@@ -97,6 +97,7 @@ def test_subscription__from_json(subscription_dict, expected_subscription):
     (
         Subscription(
             queue='queue name',
+            topic_id=1,
             topic=Topic(name='topic', id=1),
             active=True,
             qos=QOS.EXACTLY_ONCE.value,
@@ -105,6 +106,7 @@ def test_subscription__from_json(subscription_dict, expected_subscription):
         ),
         {
             'queue': 'queue name',
+            'topic_id': 1,
             'topic': {
                 'name': 'topic',
                 'id': 1
