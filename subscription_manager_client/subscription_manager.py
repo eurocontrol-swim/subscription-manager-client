@@ -76,13 +76,17 @@ class SubscriptionManagerClient(Requestor, ClientFactory):
     #     topic_data = topic.to_json()
     #
     #     return self.perform_request('PUT', url, json=topic_data, response_class=Topic)
+
     def delete_topic_by_id(self, topic_id: int):
         url = self._url_topic_by_id.format(topic_id=topic_id)
 
         self.perform_request('DELETE', url)
 
-    def get_subscriptions(self) -> t.List[Subscription]:
-        return self.perform_request('GET', self._url_subscriptions, response_class=Subscription, many=True)
+    def get_subscriptions(self, queue: t.Optional[str] = None) -> t.List[Subscription]:
+        extra_params = {'queue': queue} if queue else {}
+
+        return self.perform_request('GET', self._url_subscriptions, extra_params=extra_params,
+                                    response_class=Subscription, many=True)
 
     def get_subscription_by_id(self, subscription_id: int) -> Subscription:
         url = self._url_subscription_by_id.format(subscription_id=subscription_id)
