@@ -58,8 +58,8 @@ class Topic(BaseModel):
         :param name: the name of the topic
         :param id: the DB id of the topic
         """
-        self.name = name
-        self.id = id
+        self.name: str = name
+        self.id: int = id
 
     @classmethod
     def from_json(cls, object_dict: JSONType) -> Topic:
@@ -86,7 +86,7 @@ class Subscription(BaseModel):
                  qos: t.Optional[QOS] = None,
                  durable: t.Optional[bool] = None,
                  topic: t.Optional[Topic] = None,
-                 id: object = t.Optional[int]) -> None:
+                 id: t.Optional[int] = None) -> None:
         """
         :param queue: the unique name of the created queue upon a subscription request
         :param topic_id: the DB id of the desired topic
@@ -98,12 +98,12 @@ class Subscription(BaseModel):
         :param id: the DB id of the subsription
         """
 
-        self.queue = queue
-        self.topic_id = topic_id
-        self.active = active
-        self.durable = durable
-        self.topic = topic
-        self.id = id
+        self.queue: str = queue
+        self.topic_id: int = topic_id
+        self.active: bool = active
+        self.durable: bool = durable
+        self.topic: Topic = topic
+        self.id: int = id
 
         self._qos = None
         self.qos = qos
