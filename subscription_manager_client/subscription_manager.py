@@ -53,6 +53,7 @@ class SubscriptionManagerClient(Requestor, ClientFactory):
         self._url_topic_by_id = self._BASE_URL + 'topics/{topic_id}'
         self._url_subscriptions = self._BASE_URL + 'subscriptions/'
         self._url_subscription_by_id = self._BASE_URL + 'subscriptions/{subscription_id}'
+        self._url_ping_credentials = self._BASE_URL + 'ping-credentials'
 
     def get_topics(self) -> t.List[Topic]:
         return self.perform_request('GET', self._url_topics, response_class=Topic, many=True)
@@ -110,3 +111,7 @@ class SubscriptionManagerClient(Requestor, ClientFactory):
         url = self._url_subscription_by_id.format(subscription_id=subscription_id)
 
         self.perform_request('DELETE', url)
+
+    def ping_credentials(self):
+
+        return self.perform_request('GET', self._url_ping_credentials)
