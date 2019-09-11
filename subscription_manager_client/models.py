@@ -27,10 +27,8 @@ http://opensource.org/licenses/BSD-3-Clause
 
 Details on EUROCONTROL: http://www.eurocontrol.int
 """
-from __future__ import annotations
 import enum
 import typing as t
-from functools import reduce
 
 from rest_client import BaseModel
 from rest_client.typing import JSONType
@@ -62,7 +60,12 @@ class Topic(BaseModel):
         self.id: int = id
 
     @classmethod
-    def from_json(cls, object_dict: JSONType) -> Topic:
+    def from_json(cls, object_dict: JSONType):
+        """
+
+        :param object_dict:
+        :return: Topic
+        """
         return cls(
             name=object_dict['name'],
             id=object_dict.get('id')
@@ -120,7 +123,12 @@ class Subscription(BaseModel):
         self._qos = value
 
     @classmethod
-    def from_json(cls, object_dict: JSONType) -> Subscription:
+    def from_json(cls, object_dict: JSONType):
+        """
+
+        :param object_dict:
+        :return: Subscription
+        """
         return cls(
             queue=object_dict['queue'],
             active=object_dict['active'],
@@ -142,6 +150,7 @@ class Subscription(BaseModel):
             _update_if_not_none(result, prop, attr)
 
         return result
+
 
 def _update_if_not_none(d, prop, value):
     if value is not None:
