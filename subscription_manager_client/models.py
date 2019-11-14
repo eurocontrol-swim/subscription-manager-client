@@ -84,15 +84,13 @@ class Subscription(BaseModel):
 
     def __init__(self,
                  queue: t.Optional[str] = None,
-                 topic_id: t.Optional[int] = None,
                  active: t.Optional[bool] = None,
                  qos: t.Optional[QOS] = None,
                  durable: t.Optional[bool] = None,
-                 topic: t.Optional[Topic] = None,
+                 topics: t.Optional[t.Union[t.List[Topic], t.List[str]]] = None,
                  id: t.Optional[int] = None) -> None:
         """
         :param queue: the unique name of the created queue upon a subscription request
-        :param topic_id: the DB id of the desired topic
         :param active: indicates whether the subscription is active or not
         :param qos: the Quality of Service handled by the broker for the specific subscription
         :param durable: expresses the durability of the subscription (if the messages will be kept while subscribers
@@ -102,10 +100,9 @@ class Subscription(BaseModel):
         """
 
         self.queue: str = queue
-        self.topic_id: int = topic_id
         self.active: bool = active
         self.durable: bool = durable
-        self.topic: Topic = topic
+        self.topics: t.Union[t.List[Topic], t.List[str]] = topics
         self.id: int = id
 
         self._qos = None
@@ -122,6 +119,13 @@ class Subscription(BaseModel):
 
         self._qos = value
 
+    @staticmethod
+    def _topic_from_json(topic: t.Union[str, t.Dict[str, t.Any]]):
+        if isinstance(topic, dict) and topic.get('id'):
+            return Topic.from_json(topic)
+
+        return topic
+
     @classmethod
     def from_json(cls, object_dict: JSONType):
         """
@@ -134,22 +138,31 @@ class Subscription(BaseModel):
             active=object_dict['active'],
             qos=object_dict['qos'],
             durable=object_dict['durable'],
-            topic=Topic.from_json(object_dict['topic']),
+            topics=[cls._topic_from_json(topic) for topic in object_dict['topics']],
             id=object_dict['id'],
         )
 
     def to_json(self):
-        props = ['queue', 'topic_id', 'active', 'qos', 'durable', 'topic', 'id']
+        props = ['queue', 'topics', 'active', 'qos', 'durable', 'id']
 
         result = {}
 
         for prop in props:
             attr = getattr(self, prop)
-            if hasattr(attr, 'to_json'):
-                attr = attr.to_json()
-            _update_if_not_none(result, prop, attr)
+            attr_json = _to_json(attr)
+            _update_if_not_none(result, prop, attr_json)
 
         return result
+
+
+def _to_json(value: t.Any):
+    if isinstance(value, list):
+        return [_to_json(val) for val in value]
+
+    if hasattr(value, 'to_json'):
+        return value.to_json()
+
+    return value
 
 
 def _update_if_not_none(d, prop, value):

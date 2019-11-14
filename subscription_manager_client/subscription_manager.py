@@ -71,13 +71,6 @@ class SubscriptionManagerClient(Requestor, ClientFactory):
 
         return self.perform_request('POST', self._url_topics, json=topic_data, response_class=Topic)
 
-    # def put_topic(self, topic_id: int, topic: Topic) -> Topic:
-    #     url = self._url_topic_by_id.format(topic_id=topic_id)
-    #
-    #     topic_data = topic.to_json()
-    #
-    #     return self.perform_request('PUT', url, json=topic_data, response_class=Topic)
-
     def delete_topic_by_id(self, topic_id: int):
         url = self._url_topic_by_id.format(topic_id=topic_id)
 

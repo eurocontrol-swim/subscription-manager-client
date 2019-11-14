@@ -50,18 +50,19 @@ def make_topic_list():
     return [topic_dict_1, topic_dict_2], [topic_1, topic_2]
 
 
-def make_subscription(queue='queue'):
+def make_subscription(queue='queue', to_dump=True):
     subscription_dict = {
         'queue': queue,
-        'topic': {
-            'name': 'topic',
-            'id': 1
-        },
         'active': True,
         'qos': 'EXACTLY_ONCE',
         'durable': True,
         'id': 1
     }
+
+    if to_dump:
+        subscription_dict['topics'] = [{'name': 'topic', 'id': 1}]
+    else:
+        subscription_dict['topics'] = ['topic']
 
     subscription = Subscription.from_json(subscription_dict)
 

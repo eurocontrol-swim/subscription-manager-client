@@ -181,41 +181,6 @@ def test_post_topic__topic_object_is_returned():
     assert BASE_URL + 'topics/' == called_url
 
 
-# @pytest.mark.parametrize('error_code', [400, 401, 403, 404, 500])
-# def test_put_topic__http_error_code__raises_api_error(error_code):
-#     response = Mock()
-#     response.status_code = error_code
-#
-#     request_handler = Mock()
-#     request_handler.put = Mock(return_value=response)
-#
-#     client = SubscriptionManagerClient(request_handler=request_handler)
-#
-#     with pytest.raises(APIError):
-#         client.put_topic(1, Mock())
-#
-#
-# def test_put_topic__topic_object_is_returned():
-#     topic_dict, expected_topic = make_topic()
-#
-#     response = Mock()
-#     response.status_code = 200
-#     response.content = topic_dict
-#     response.json = Mock(return_value=topic_dict)
-#
-#     request_handler = Mock()
-#     request_handler.put = Mock(return_value=response)
-#
-#     client = SubscriptionManagerClient(request_handler=request_handler)
-#
-#     topic = client.put_topic(1, Mock())
-#
-#     assert expected_topic == topic
-#
-#     called_url = request_handler.put.call_args[0][0]
-#     assert BASE_URL + 'topics/1' == called_url
-
-
 @pytest.mark.parametrize('error_code', [400, 401, 403, 404, 500])
 def test_delete_topic_by_id__http_error_code__raises_api_error(error_code):
     response = Mock()
