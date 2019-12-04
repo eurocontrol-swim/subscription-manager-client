@@ -38,7 +38,7 @@ setup(
     author='EUROCONTROL (SWIM)',
     author_email='',
     packages=find_packages(exclude=['tests']),
-    url='https://bitbucket.org/antavelos-eurocontrol/subscription-manager-client',
+    url='https://github.com/eurocontrol-swim/subscription-manager-client',
     install_requires=[],
     tests_require=[
         'pytest',
