@@ -33,7 +33,7 @@ __author__ = 'EUROCONTROL (SWIM)'
 
 setup(
     name='subscription-manager-client',
-    version='0.0.8',
+    version='0.0.9',
     description='Subscription Manager Client',
     author='EUROCONTROL (SWIM)',
     author_email='',
